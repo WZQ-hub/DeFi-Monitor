@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'ETHMonitor.apps.EthmonitorConfig',
+    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -102,6 +104,63 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+LOGGING = {
+    "version": 1,  # 配置的版本，目前固定为1
+    "disable_existing_loggers": False,  # 是否禁用已存在的日志记录器。通常设为 False。
+
+    # 定义日志格式
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+
+    # 定义处理器（Handler），决定日志要输出到哪里
+    "handlers": {
+        # 输出到控制台
+        "console": {
+            "level": "DEBUG",  # 处理的最低日志级别
+            "class": "logging.StreamHandler",
+            "formatter": "simple",  # 使用上面定义的 'simple' 格式
+        },
+        # 输出到文件
+        "file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",  # 文件达到一定大小时会自动分割
+            "filename": "logs/django.log",  # 日志文件路径 (请确保 logs 目录存在)
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 2,  # 保留2个备份文件
+            "formatter": "verbose",  # 使用上面定义的 'verbose' 格式
+        },
+    },
+
+    # 定义日志记录器（Logger），它们是日志的入口
+    "loggers": {
+        # Django 自身的日志
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        # 你自己应用的日志 (假设你有一个叫 'myapp' 的应用)
+        "myapp": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,  # 不再向上传递给根记录器
+        },
+        # 根记录器，捕获所有未被明确指定的日志
+        "root": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
